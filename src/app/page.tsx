@@ -1,103 +1,165 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useState } from 'react';
+import BlogCarousel from '@/components/BlogCarousel';
+import { fetchBlogSummaries } from '@/lib/api';
+import { BlogSummary } from '@/components/BlogCarousel';
+
+// Trump news video fallback for second carousel card
+const TRUMP_NEWS_FALLBACK = {
+  youtube_video: 'https://www.youtube.com/watch?v=dGKKIg-ZUkE',
+  // Using local thumbnail image to avoid YouTube black thumbnail issue
+  youtube_thumbnail: '/trump-thumbnail.jpg',
+  title: 'Latest Trump News & Updates',
+  summary: 'Get the latest updates on President Trump including policy announcements, campaign events, and key developments in American politics.'
+};
+
+// Client-side utility to get query params
+function getQueryParam(name: string): string | null {
+  // Use window only after component has mounted
+  if (typeof window === 'undefined') return null;
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
+
+// Note: We no longer need placeholder data as api.ts provides mockBlogSummaries as default
 
 export default function Home() {
+  const [blogSummaries, setBlogSummaries] = useState<BlogSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Effect to load blog summaries with timeout logic
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      // Abort after 1 minute
+      controller.abort('Timeout after 60 seconds');
+      console.log('Supabase fetch timed out after 60 seconds, using fallback data');
+    }, 60000); // 1 minute timeout
+    
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Get postId from URL (support both post_id and postId formats)
+        const id = getQueryParam('post_id') || getQueryParam('postId');
+        
+        // Log post ID for testing purposes
+        console.log('TESTING - Post ID:', id || 'None');
+        
+        // Create a promise that can be used with a timeout
+        const fetchWithTimeout = async () => {
+          try {
+            // Try to fetch from Supabase with abort signal
+            const data = await fetchBlogSummaries({
+              postId: id || undefined,
+              signal: controller.signal // Pass abort signal to API
+            });
+            
+            if (data && data.length > 0) {
+              // Duplicate the summaries to have 3-4 items for testing/display
+              const firstItem = data[0];
+              
+              // Create duplicates with slightly modified content
+              const duplicatedData = [
+                // First card - standard, no YouTube video
+                {
+                  ...firstItem,
+                  // Explicitly remove YouTube properties from first card
+                  youtube_video: undefined,
+                  youtube_thumbnail: undefined
+                },
+                // Second card - always has YouTube video (from Supabase or fallback)
+                {
+                  // Second card always has YouTube video link (use data from Supabase if available or fallback to Trump news)
+                  ...firstItem,
+                  id: `${firstItem.id}-dup-1`,
+                  title: firstItem.youtube_video ? `${firstItem.title} - Key Insights` : TRUMP_NEWS_FALLBACK.title,
+                  summary: firstItem.youtube_video ? 
+                    `Key insights from this article: ${firstItem.summary.substring(0, 100)}...` : 
+                    TRUMP_NEWS_FALLBACK.summary,
+                  youtube_video: firstItem.youtube_video || TRUMP_NEWS_FALLBACK.youtube_video,
+                  // Better thumbnail handling - prioritize Supabase thumbnail if it exists and appears valid
+                  youtube_thumbnail: (firstItem.youtube_thumbnail && firstItem.youtube_thumbnail.trim() !== '') ? 
+                    firstItem.youtube_thumbnail : 
+                    TRUMP_NEWS_FALLBACK.youtube_thumbnail
+                },
+                // Third card - summary only, no YouTube video
+                {
+                  ...firstItem,
+                  id: `${firstItem.id}-dup-2`,
+                  title: `${firstItem.title} - Summary`,
+                  summary: `A brief summary: ${firstItem.summary.substring(50, 150)}...`,
+                  // Explicitly remove YouTube properties
+                  youtube_video: undefined,
+                  youtube_thumbnail: undefined
+                },
+                // Fourth card - conclusion only, no YouTube video
+                {
+                  ...firstItem,
+                  id: `${firstItem.id}-dup-3`,
+                  title: `${firstItem.title} - Conclusion`,
+                  summary: `In conclusion: ${firstItem.summary.substring(20, 120)}...`,
+                  // Explicitly remove YouTube properties
+                  youtube_video: undefined,
+                  youtube_thumbnail: undefined
+                }
+              ];
+              
+              return duplicatedData;
+            }
+            return null;
+          } catch (error) {
+            console.error('Error fetching from Supabase:', error);
+            throw error;
+          }
+        };
+        
+        // Try to fetch with timeout
+        const result = await fetchWithTimeout();
+        
+        // If we have data, use it
+        if (result) {
+          setBlogSummaries(result);
+          console.log('Successfully loaded data from Supabase');
+        }
+      } catch (err) {
+        console.error('Failed to fetch blog data:', err);
+        // Error handling is done in finally block to ensure loading state is updated
+      } finally {
+        clearTimeout(timeoutId);
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+    
+    // Cleanup function
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort('Component unmounted');
+    };
+  }, []); // Only run once on mount
+  
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="h-screen w-full overflow-hidden bg-white">
+      {isLoading ? (
+        // Show loader while fetching from Supabase (max 1 minute)
+        <div className="h-full w-full flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-black border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+            <p className="mt-4 text-black font-medium">Loading blog highlights...</p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      ) : (
+        // Show carousel with data after loading or timeout
+        <BlogCarousel 
+          summaries={blogSummaries} 
+          title="Blog Highlights" 
+          isNew={false} 
+        />
+      )}
     </div>
   );
 }

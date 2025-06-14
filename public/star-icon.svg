@@ -1,0 +1,10 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main large 4-pointed star -->
+  <path d="M10 2L11.5 8.5L18 10L11.5 11.5L10 18L8.5 11.5L2 10L8.5 8.5L10 2Z" fill="#000000"/>
+  
+  <!-- Small star at northeast -->
+  <path d="M15 1L15.5 3.5L18 4L15.5 4.5L15 7L14.5 4.5L12 4L14.5 3.5L15 1Z" fill="#000000"/>
+  
+  <!-- Small star at southeast -->
+  <path d="M15 14L15.5 16.5L18 17L15.5 17.5L15 20L14.5 17.5L12 17L14.5 16.5L15 14Z" fill="#000000"/>
+</svg>

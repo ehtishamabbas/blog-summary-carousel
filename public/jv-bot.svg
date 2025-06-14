@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Robot Head -->
+  <circle cx="100" cy="100" r="80" fill="#e6e6e6" />
+  <ellipse cx="100" cy="120" rx="70" ry="65" fill="#f2f2f2" />
+  
+  <!-- Ears -->
+  <ellipse cx="30" cy="90" rx="15" ry="20" fill="#e6e6e6" />
+  <ellipse cx="170" cy="90" rx="15" ry="20" fill="#e6e6e6" />
+  
+  <!-- Head Top -->
+  <path d="M60,40 Q100,20 140,40 V20 Q100,0 60,20 Z" fill="#e6e6e6" />
+  
+  <!-- Face Screen -->
+  <ellipse cx="100" cy="90" rx="50" ry="40" fill="#002833" />
+  
+  <!-- Eyes -->
+  <ellipse cx="80" cy="85" rx="10" ry="5" fill="#40E0D0" />
+  <ellipse cx="120" cy="85" rx="10" ry="5" fill="#40E0D0" />
+  
+  <!-- Smile -->
+  <path d="M85,105 Q100,115 115,105" stroke="#40E0D0" stroke-width="3" fill="none" />
+  
+  <!-- JV Political Logo on Body -->
+  <rect x="70" y="130" width="60" height="20" fill="white" rx="2" />
+  <text x="100" y="145" font-family="Arial" font-weight="bold" font-size="8" text-anchor="middle" fill="#333">POLITICAL</text>
+  
+  <!-- JV Logo -->
+  <circle cx="82" cy="140" r="7" fill="#E63946" />
+  <path d="M95,133 L103,146 L111,133" fill="#3D5A80" />
+  
+  <!-- Robot Arms -->
+  <path d="M40,150 Q30,180 25,190" stroke="#e6e6e6" stroke-width="10" fill="none" />
+  <path d="M160,150 Q170,180 175,190" stroke="#e6e6e6" stroke-width="10" fill="none" />
+</svg>
