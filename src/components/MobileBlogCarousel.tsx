@@ -10,8 +10,19 @@ interface MobileBlogCarouselProps {
 const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) => {
   const showMobileLayout = useMediaQuery('(max-width: 450px)');
   const [currentPage, setCurrentPage] = useState(0);
+  const [thumbnailError, setThumbnailError] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
+
+  // Function to handle YouTube video click
+  const handleYouTubeClick = (url: string) => {
+    if (url) window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  // Handle image loading error by setting error state
+  const handleImageError = () => {
+    setThumbnailError(true);
+  };
   
   // We need exactly 4 summaries (3 visible initially + 1 for related content)
   const normalizedSummaries = summaries.slice(0, 4);
@@ -40,12 +51,10 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
     const threshold = 50; // Minimum distance required for a swipe
     
     if (Math.abs(diffX) > threshold) {
-      if (diffX > 0 && currentPage === 0) {
-        // Swiped left - go to related content page
-        setCurrentPage(1);
-      } else if (diffX < 0 && currentPage === 1) {
-        // Swiped right - go back to main panels
-        setCurrentPage(0);
+      if (diffX > 0) { // Swiped left
+        setCurrentPage(prev => Math.min(prev + 1, 2)); // Go to next page, max 2
+      } else if (diffX < 0) { // Swiped right
+        setCurrentPage(prev => Math.max(prev - 1, 0)); // Go to previous page, min 0
       }
     }
     
@@ -94,74 +103,116 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
           className="flex transition-transform duration-300 ease-in-out"
           style={{ transform: `translateX(-${currentPage * 100}%)` }}
         >
-          {/* First page: 3 panels side by side */}
-          <div className="w-full flex-shrink-0 flex flex-col" style={{ height: 'calc(100vw/3)' }}>
+          {/* Page 1: Key Points & Analysis (2 panels) */}
+          <div className="w-full flex-shrink-0 flex flex-col" style={{ height: 'calc(100vw/1.5)' }}> {/* Adjusted height */}
             <div className="flex w-full h-full">
-              {/* Panel 1: Summary 1 */}
+              {/* Panel 1: Key Points */}
               <div className="flex-1 p-1">
-                <div className="bg-white h-full rounded-sm p-2 flex flex-col">
-                  <h3 className="text-xs font-semibold mb-1">Key Points</h3>
-                  <div className="flex-1 overflow-y-auto">
-                    <p className="text-xs">{smartTruncateText(normalizedSummaries[0]?.summary1, 150)}</p>
+                <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
+                  <div className="flex-grow overflow-y-auto mb-2 pt-1">
+                    <p className="text-sm text-gray-700 line-clamp-5 min-h-[5em]">{smartTruncateText(normalizedSummaries[0]?.summary1 || '', 180)}</p>
                   </div>
+                  {normalizedSummaries[0]?.source && (
+                    <div className="mt-auto pt-1 text-xs text-gray-600 border-t border-gray-100">
+                      Summary by {normalizedSummaries[0].source}
+                    </div>
+                  )}
                 </div>
               </div>
               
-              {/* Panel 2: Summary 2 */}
+              {/* Panel 2: Analysis */}
               <div className="flex-1 p-1">
-                <div className="bg-white h-full rounded-sm p-2 flex flex-col">
-                  <h3 className="text-xs font-semibold mb-1">Analysis</h3>
-                  <div className="flex-1 overflow-y-auto">
-                    <p className="text-xs">{smartTruncateText(normalizedSummaries[0]?.summary2, 150)}</p>
+                <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
+                  <div className="flex-grow overflow-y-auto mb-2 pt-1">
+                    <p className="text-sm text-gray-700 line-clamp-5 min-h-[5em]">{smartTruncateText(normalizedSummaries[2]?.summary2 || '', 180)}</p>
                   </div>
-                </div>
-              </div>
-              
-              {/* Panel 3: YouTube Video */}
-              <div className="flex-1 p-1">
-                <div className="bg-white h-full rounded-sm p-2 flex flex-col">
-                  <h3 className="text-xs font-semibold mb-1">Video</h3>
-                  <div className="flex-1 flex items-center justify-center">
-                    {normalizedSummaries[0]?.youtube_video && normalizedSummaries[0]?.youtube_thumbnail ? (
-                      <a 
-                        href={normalizedSummaries[0].youtube_video} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="relative w-full h-full block"
-                      >
-                        <div 
-                          className="absolute inset-0 bg-cover bg-center" 
-                          style={{ 
-                            backgroundImage: `url('${normalizedSummaries[0].youtube_thumbnail}')`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                          }}
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20">
-                          <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center">
-                            <div className="w-0 h-0 border-t-3 border-t-transparent border-l-4 border-l-white border-b-3 border-b-transparent ml-0.5"></div>
-                          </div>
-                        </div>
-                      </a>
-                    ) : (
-                      <div className="text-xs text-gray-500">No video</div>
-                    )}
-                  </div>
+                  {normalizedSummaries[2]?.source && (
+                    <div className="mt-auto pt-1 text-xs text-gray-600 border-t border-gray-100">
+                      Summary by {normalizedSummaries[2].source}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
-          
-          {/* Second page: Related content (4th panel) */}
-          <div className="w-full flex-shrink-0" style={{ height: 'calc(100vw/3)' }}>
+
+          {/* Page 2: YouTube Video (1 panel) */}
+          <div className="w-full flex-shrink-0" style={{ height: 'calc(100vw/1.5)' }}> {/* Adjusted height */}
             <div className="p-1 h-full">
-              <div className="bg-white h-full rounded-sm p-2 flex flex-col">
-                <h3 className="text-xs font-semibold mb-1">Related Content</h3>
-                <div className="flex-1 overflow-y-auto">
-                  <p className="text-xs">{smartTruncateText(normalizedSummaries[0]?.summary3, 400)}</p>
+              <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
+                <div className="flex-grow flex flex-col items-center justify-center pt-1">
+                  {normalizedSummaries[1]?.youtube_video && normalizedSummaries[1]?.youtube_thumbnail ? (
+                    <div 
+                      className="relative h-40 w-full mb-2 rounded overflow-hidden border border-gray-200 cursor-pointer"
+                      onClick={() => handleYouTubeClick(normalizedSummaries[1].youtube_video || '')}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Watch video"
+                      onKeyDown={(e) => e.key === 'Enter' && normalizedSummaries[1].youtube_video && handleYouTubeClick(normalizedSummaries[1].youtube_video)}
+                    >
+                      <div className="h-full w-full relative"> 
+                        <div 
+                          className="h-full w-full bg-cover bg-center" 
+                          style={{ 
+                            backgroundImage: `url('${thumbnailError ? '/trump-thumbnail.jpg' : normalizedSummaries[1].youtube_thumbnail}')`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                          }}
+                        >
+                          <Image 
+                            src={normalizedSummaries[1].youtube_thumbnail || ''} // Use index 1 for thumbnail source
+                            alt="Video thumbnail"
+                            width={1}
+                            height={1}
+                            className="hidden"
+                            onError={handleImageError} // This will use the component's thumbnailError state, which is fine
+                          />
+                        </div>
+                        <div className={`absolute inset-0 flex items-center justify-center transition-opacity ${(thumbnailError || !normalizedSummaries[1].youtube_thumbnail) ? 'bg-black bg-opacity-20 hover:bg-opacity-30' : 'hover:bg-black hover:bg-opacity-10'}`}> 
+                          <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                            <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-1"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-gray-600">No video available</div>
+                  )}
                 </div>
-                {normalizedSummaries[0]?.source && (
-                  <div className="text-xs mt-1">Source: {normalizedSummaries[0].source}</div>
+                {normalizedSummaries[1]?.youtube_video && ( // Use index 1 for video link
+                  <div className="mt-auto pt-1 border-t border-gray-100">
+                    <a 
+                      href={normalizedSummaries[1].youtube_video} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:underline flex items-center justify-center"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleYouTubeClick(normalizedSummaries[1].youtube_video || '');
+                      }}
+                    >
+                      <svg className="w-4 h-4 mr-1 fill-current text-red-600" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                      </svg>
+                      Watch on YouTube
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Page 3: Related Content (1 panel) */}
+          <div className="w-full flex-shrink-0" style={{ height: 'calc(100vw/1.5)' }}> {/* Adjusted height */}
+            <div className="p-1 h-full">
+              <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
+                <div className="flex-grow overflow-y-auto mb-2 pt-1">
+                  <p className="text-sm text-gray-700 line-clamp-5 min-h-[5em]">{smartTruncateText(normalizedSummaries[3]?.summary3 || '', 350)}</p>
+                </div>
+                {normalizedSummaries[3]?.source && (
+                  <div className="mt-auto pt-1 text-xs text-gray-600 border-t border-gray-100">
+                    Summary by {normalizedSummaries[3].source}
+                  </div>
                 )}
               </div>
             </div>
@@ -170,16 +221,22 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
       </div>
       
       {/* Page indicators */}
-      <div className="flex justify-center mt-2 space-x-2">
+      {/* Page indicators for 3 pages */}
+      <div className="flex justify-center mt-2 mb-2 space-x-2"> {/* Added mb-2 for spacing */}
         <button 
           onClick={() => setCurrentPage(0)} 
           className={`w-2 h-2 rounded-full ${currentPage === 0 ? 'bg-black' : 'bg-gray-300'}`}
-          aria-label="Main panels"
+          aria-label="Page 1: Summaries"
         />
         <button 
           onClick={() => setCurrentPage(1)}
           className={`w-2 h-2 rounded-full ${currentPage === 1 ? 'bg-black' : 'bg-gray-300'}`}
-          aria-label="Related content"
+          aria-label="Page 2: Video"
+        />
+        <button 
+          onClick={() => setCurrentPage(2)}
+          className={`w-2 h-2 rounded-full ${currentPage === 2 ? 'bg-black' : 'bg-gray-300'}`}
+          aria-label="Page 3: Related Content"
         />
       </div>
     </div>
