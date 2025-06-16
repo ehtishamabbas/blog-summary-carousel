@@ -92,7 +92,7 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
   }
 
   return (
-    <div className="w-full bg-gray-50">
+    <div className="w-full">
       <div 
         className="w-full overflow-hidden"
         onTouchStart={handleTouchStart}
@@ -104,7 +104,7 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
           style={{ transform: `translateX(-${currentPage * 100}%)` }}
         >
           {/* Page 1: Key Points & Analysis (2 panels) */}
-          <div className="w-full flex-shrink-0 flex flex-col" style={{ height: 'calc(100vw/2.0)' }}> {/* Adjusted height */}
+          <div className="w-full flex-shrink-0 flex flex-col" > {/* Adjusted height */}
             <div className="flex w-full h-full">
               {/* Panel 1: Key Points */}
               <div className="flex-1 p-1">
@@ -137,7 +137,7 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
           </div>
 
           {/* Page 2: YouTube Video (1 panel) */}
-          <div className="w-full flex-shrink-0" style={{ height: 'calc(100vw/2.0)' }}> {/* Adjusted height */}
+          <div className="w-full flex-shrink-0" > {/* Adjusted height */}
             <div className="p-1 h-full">
               <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
                 <div className="flex-grow flex flex-col items-center justify-center pt-1">
@@ -203,7 +203,7 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
           </div>
           
           {/* Page 3: Related Content (1 panel) */}
-          <div className="w-full flex-shrink-0" style={{ height: 'calc(100vw/2.0)' }}> {/* Adjusted height */}
+          <div className="w-full flex-shrink-0" > {/* Adjusted height */}
             <div className="p-1 h-full">
               <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
                 <div className="flex-grow overflow-y-auto mb-2 pt-1">
@@ -222,7 +222,7 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
       
       {/* Page indicators */}
       {/* Page indicators for 3 pages */}
-      <div className="flex justify-center mt-2 mb-2 space-x-2"> {/* Added mb-2 for spacing */}
+      <div className="flex justify-center space-x-1.5"> 
         <button 
           onClick={() => setCurrentPage(0)} 
           className={`w-2 h-2 rounded-full ${currentPage === 0 ? 'bg-black' : 'bg-gray-300'}`}
