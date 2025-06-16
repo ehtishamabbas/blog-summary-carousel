@@ -1,4 +1,5 @@
 import React, { useState, useRef, TouchEvent } from 'react';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { BlogSummary } from './BlogCarousel';
 import Image from 'next/image';
 
@@ -7,6 +8,7 @@ interface MobileBlogCarouselProps {
 }
 
 const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) => {
+  const showMobileLayout = useMediaQuery('(max-width: 450px)');
   const [currentPage, setCurrentPage] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
@@ -76,6 +78,10 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
     return truncated + '...';
   };
   
+  if (!showMobileLayout) {
+    return null;
+  }
+
   return (
     <div className="w-full bg-gray-50">
       <div 

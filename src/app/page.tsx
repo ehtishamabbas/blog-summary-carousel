@@ -5,7 +5,7 @@ import BlogCarousel from '@/components/BlogCarousel';
 import MobileBlogCarousel from '@/components/MobileBlogCarousel';
 import { fetchBlogSummaries } from '@/lib/api';
 import { BlogSummary } from '@/components/BlogCarousel';
-import { useIsMobile } from '@/hooks/useMediaQuery';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 // Client-side utility to get query params
 function getQueryParam(name: string): string | null {
@@ -73,6 +73,8 @@ export default function Home() {
       controller.abort('Component unmounted');
     };
   }, []); // Only run once on mount
+
+  const isMobileLayoutBoundary = useMediaQuery('(max-width: 450px)');
   
   return (
     <div className="h-screen w-full overflow-hidden bg-white">
@@ -87,19 +89,15 @@ export default function Home() {
       ) : (
         // Conditionally render either mobile or desktop carousel based on viewport size
         <>
-          {/* Mobile view uses hook to conditionally render */}
-          <div className="md:hidden w-full">
+          {isMobileLayoutBoundary ? (
             <MobileBlogCarousel summaries={blogSummaries} />
-          </div>
-          
-          {/* Desktop view */}
-          <div className="hidden md:block">
+          ) : (
             <BlogCarousel 
               summaries={blogSummaries} 
               title="Blog Highlights" 
               isNew={false} 
             />
-          </div>
+          )}
         </>
       )}
     </div>
