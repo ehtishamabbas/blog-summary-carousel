@@ -104,16 +104,16 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
           style={{ transform: `translateX(-${currentPage * 100}%)` }}
         >
           {/* Page 1: Key Points & Analysis (2 panels) */}
-          <div className="w-full flex-shrink-0 flex flex-col" style={{ height: 'calc(100vw/1.5)' }}> {/* Adjusted height */}
+          <div className="w-full flex-shrink-0 flex flex-col" style={{ height: 'calc(100vw/2.2)' }}> {/* Adjusted height */}
             <div className="flex w-full h-full">
               {/* Panel 1: Key Points */}
               <div className="flex-1 p-1">
                 <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
                   <div className="flex-grow overflow-y-auto mb-2 pt-1">
-                    <p className="text-sm text-gray-700 line-clamp-5 min-h-[5em]">{smartTruncateText(normalizedSummaries[0]?.summary1 || '', 180)}</p>
+                    <p className="text-xs text-gray-700 line-clamp-5 min-h-[4em]">• {smartTruncateText(normalizedSummaries[0]?.summary1 || '', 240)}</p>
                   </div>
                   {normalizedSummaries[0]?.source && (
-                    <div className="mt-auto pt-1 text-xs text-gray-600 border-t border-gray-100">
+                    <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
                       Summary by {normalizedSummaries[0].source}
                     </div>
                   )}
@@ -124,10 +124,10 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
               <div className="flex-1 p-1">
                 <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
                   <div className="flex-grow overflow-y-auto mb-2 pt-1">
-                    <p className="text-sm text-gray-700 line-clamp-5 min-h-[5em]">{smartTruncateText(normalizedSummaries[2]?.summary2 || '', 180)}</p>
+                    <p className="text-xs text-gray-700 line-clamp-5 min-h-[4em]">• {smartTruncateText(normalizedSummaries[2]?.summary2 || '', 240)}</p>
                   </div>
                   {normalizedSummaries[2]?.source && (
-                    <div className="mt-auto pt-1 text-xs text-gray-600 border-t border-gray-100">
+                    <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
                       Summary by {normalizedSummaries[2].source}
                     </div>
                   )}
@@ -137,13 +137,13 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
           </div>
 
           {/* Page 2: YouTube Video (1 panel) */}
-          <div className="w-full flex-shrink-0" style={{ height: 'calc(100vw/1.5)' }}> {/* Adjusted height */}
+          <div className="w-full flex-shrink-0" style={{ height: 'calc(100vw/2.2)' }}> {/* Adjusted height */}
             <div className="p-1 h-full">
               <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
                 <div className="flex-grow flex flex-col items-center justify-center pt-1">
                   {normalizedSummaries[1]?.youtube_video && normalizedSummaries[1]?.youtube_thumbnail ? (
                     <div 
-                      className="relative h-40 w-full mb-2 rounded overflow-hidden border border-gray-200 cursor-pointer"
+                      className="relative h-28 w-full mb-2 rounded overflow-hidden border border-gray-200 cursor-pointer"
                       onClick={() => handleYouTubeClick(normalizedSummaries[1].youtube_video || '')}
                       role="button"
                       tabIndex={0}
@@ -203,14 +203,14 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
           </div>
           
           {/* Page 3: Related Content (1 panel) */}
-          <div className="w-full flex-shrink-0" style={{ height: 'calc(100vw/1.5)' }}> {/* Adjusted height */}
+          <div className="w-full flex-shrink-0" style={{ height: 'calc(100vw/2.2)' }}> {/* Adjusted height */}
             <div className="p-1 h-full">
               <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
                 <div className="flex-grow overflow-y-auto mb-2 pt-1">
-                  <p className="text-sm text-gray-700 line-clamp-5 min-h-[5em]">{smartTruncateText(normalizedSummaries[3]?.summary3 || '', 350)}</p>
+                  <p className="text-xs text-gray-700 line-clamp-5 min-h-[4em]">• {smartTruncateText(normalizedSummaries[3]?.summary3 || '', 400)}</p>
                 </div>
                 {normalizedSummaries[3]?.source && (
-                  <div className="mt-auto pt-1 text-xs text-gray-600 border-t border-gray-100">
+                  <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
                     Summary by {normalizedSummaries[3].source}
                   </div>
                 )}
