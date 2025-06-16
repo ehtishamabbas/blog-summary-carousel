@@ -4,8 +4,9 @@ import BlogSummaryCard from './BlogSummaryCard';
 // Sample data structure for blog summaries
 export interface BlogSummary {
   id: string;
-  title: string;
-  summary: string;
+  summary1: string;
+  summary2: string;
+  summary3: string;
   source?: string;
   thumbnail?: string;
   youtube_video?: string;

@@ -13,7 +13,6 @@ export interface BlogPost {
   post_id: number;
   created_at?: string;
   updated_at?: string;
-  title: string;
   summary1: string;
   summary2: string;
   summary3: string;

@@ -8,29 +8,35 @@ import { fetchPostByPostId, savePost } from './supabase-api';
 const mockBlogSummaries: BlogSummary[] = [
   {
     id: '1',
-    title: 'Ray Dalio warns that investors are too focused on tariffs',
-    summary: 'Ray Dalio warns that investors are too focused on tariffs and not paying enough attention to the breakdown in major monetary, political, and geopolitical orders.',
+    summary1: 'Ray Dalio warns that investors are too focused on tariffs and not paying enough attention to the breakdown in major monetary, political, and geopolitical orders.',
+    summary2: '',
+    summary3: '',
     source: 'JVPolitical AI',
     thumbnail: '/trump-thumbnail.jpg'
   },
   {
     id: '2',
-    title: 'Dalio cites the US debt to finance expenditure',
-    summary: 'Dalio cites the US debt to finance expenditure as creditor countries are holding too much, which is one of the key drivers of Trump\'s policies, which will require a correction of the system and a change in the world order.',
+    summary1: '',
+    summary2: 'Dalio cites the US debt to finance expenditure as creditor countries are holding too much, which is one of the key drivers of Trump\'s policies.',
+    summary3: '',
     source: 'JVPolitical AI'
   },
   {
     id: '3',
-    title: 'Global Economic Shifts and Market Implications',
-    summary: 'Analysis of how changing global economic patterns are affecting market dynamics and investment strategies in emerging economies.',
+    summary1: '',
+    summary2: '',
+    summary3: 'Analysis of how changing global economic patterns are affecting market dynamics and investment strategies in emerging economies.',
     source: 'JVPolitical AI',
     thumbnail: '/trump-thumbnail.jpg'
   },
   {
-    id: '4',
-    title: 'Tech Giants Navigate Regulatory Challenges',
-    summary: 'Major technology companies are developing new strategies to address increasing regulatory scrutiny across global markets.',
-    source: 'JVPolitical AI'
+    id: '4-video',
+    summary1: '',
+    summary2: '',
+    summary3: '',
+    source: 'JVPolitical AI',
+    youtube_video: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    youtube_thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'
   }
 ];
 

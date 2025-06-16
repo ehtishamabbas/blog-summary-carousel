@@ -36,8 +36,7 @@ async function processPostData(data: WebhookData) {
     // Example: Extract information from the post data
     // This would be customized based on your WordPress structure
     const postId = data.post_id;
-    const title = data.post?.post_title || 'Untitled Post';
-    // Removed unused content and thumbnail variables
+    // Removed unused title, content and thumbnail variables
     const description = data.post?.post_excerpt || '';
     const url = data.post?.post_meta?.url || '';
 
@@ -62,8 +61,9 @@ async function processPostData(data: WebhookData) {
     // Create or update a post record
     const postData: BlogPost = {
       post_id: postId,
-      title: title || `Post ${postId}`,
-      summary: description || 'No description provided',
+      summary1: description || 'No description provided',
+      summary2: description || 'No description provided', // Using same description for all summary fields
+      summary3: description || 'No description provided', // Using same description for all summary fields
       youtube_video: '',  // You can set these based on your incoming data
       youtube_thumbnail: url || 'https://via.placeholder.com/800x600',
       updated_at: new Date().toISOString()

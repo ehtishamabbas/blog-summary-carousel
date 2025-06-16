@@ -20,17 +20,50 @@ const BlogSummaryCard: React.FC<BlogSummaryCardProps> = ({ summary }) => {
   const handleImageError = () => {
     setThumbnailError(true);
   };
+
+  // Determine what content to display in this card
+  const isYouTubeCard = Boolean(summary.youtube_video && summary.youtube_thumbnail);
+  const rawSummaryText = summary.summary1 || summary.summary2 || summary.summary3 || '';
+  
+  // Smart text truncation function that tries to end at a sentence boundary
+  const smartTruncateText = (text: string, maxLength: number = 400): string => {
+    if (text.length <= maxLength) return text;
+    
+    // Try to find the last sentence boundary within the maxLength
+    const truncated = text.substring(0, maxLength);
+    
+    // Look for the last period followed by a space or the end of the truncated text
+    const lastPeriodIndex = truncated.lastIndexOf('.');
+    
+    if (lastPeriodIndex > maxLength * 0.6) { // Only use period if we're not cutting off too much
+      return truncated.substring(0, lastPeriodIndex + 1);
+    }
+    
+    // Fall back to seeking the last complete word
+    const lastSpaceIndex = truncated.lastIndexOf(' ');
+    if (lastSpaceIndex > 0) {
+      return truncated.substring(0, lastSpaceIndex) + '...';
+    }
+    
+    // If all else fails, just truncate
+    return truncated + '...';
+  };
+  
+  const summaryText = smartTruncateText(rawSummaryText);
+  const hasThumbnail = Boolean(summary.thumbnail);
+  
   return (
     <div className="border border-gray-200 rounded p-4 h-full flex flex-col bg-white">
       {/* Card Header with thumbnail or YouTube thumbnail */}
       <div className="mb-3">
-        {summary.youtube_thumbnail && summary.youtube_video ? (
+        {isYouTubeCard ? (
+          // YouTube card with clickable thumbnail and play button
           <div 
             className="relative h-40 w-full mb-3 rounded overflow-hidden border border-gray-200 cursor-pointer"
             onClick={() => handleYouTubeClick(summary.youtube_video || '')}
             role="button"
             tabIndex={0}
-            aria-label={`Watch video: ${summary.title}`}
+            aria-label="Watch video"
             onKeyDown={(e) => e.key === 'Enter' && summary.youtube_video && handleYouTubeClick(summary.youtube_video)}
           >
             <div className="h-full w-full relative">
@@ -45,8 +78,8 @@ const BlogSummaryCard: React.FC<BlogSummaryCardProps> = ({ summary }) => {
               >
                 {/* Hidden image to detect load errors */}
                 <Image 
-                  src={summary.youtube_thumbnail}
-                  alt=""
+                  src={summary.youtube_thumbnail || ''}
+                  alt="Video thumbnail"
                   width={1}
                   height={1}
                   className="hidden"
@@ -62,9 +95,9 @@ const BlogSummaryCard: React.FC<BlogSummaryCardProps> = ({ summary }) => {
               </div>
             </div>
           </div>
-        ) : summary.thumbnail && (
+        ) : hasThumbnail ? (
+          // Regular thumbnail image (non-YouTube)
           <div className="relative h-40 w-full mb-3 rounded overflow-hidden border border-gray-200">
-            {/* Handle images safely - use a div with background for external URLs */}
             <div 
               className="h-full w-full bg-cover bg-center" 
               style={{ 
@@ -74,16 +107,17 @@ const BlogSummaryCard: React.FC<BlogSummaryCardProps> = ({ summary }) => {
               }}
             />
           </div>
-        )}
-        <h3 className="text-md font-bold line-clamp-2 text-black">{summary.title}</h3>
+        ) : null}
       </div>
       
-      {/* Card Body */}
-      <div className="flex-grow">
-        <p className="text-sm text-black line-clamp-3">
-          {summary.summary}
-        </p>
-      </div>
+      {/* Card Body - Only show text if it's not a YouTube-only card or if there's both video and text */}
+      {summaryText && (
+        <div className="flex-grow">
+          <p className="text-sm text-black line-clamp-5 min-h-[5em]">
+            {summaryText}
+          </p>
+        </div>
+      )}
       
       {/* Card Footer */}
       <div className="mt-3 flex flex-col justify-end gap-2">

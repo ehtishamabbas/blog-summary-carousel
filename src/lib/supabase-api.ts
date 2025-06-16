@@ -1,18 +1,92 @@
 import { BlogPost, supabase } from './supabase';
 import { BlogSummary } from '@/components/BlogCarousel';
 
-// Convert Supabase post to blog summaries format
-const mapPostToBlogSummary = (post: BlogPost): BlogSummary => {
-  return {
-    id: post.post_id?.toString() || '',
-    title: post.title || '',
-    summary: post.summary1 || '', // Default to using summary1
-    source: 'JVPolitical AI', // Set a default source
-    thumbnail: post.youtube_thumbnail || '',
-    youtube_video: post.youtube_video || '',
-    youtube_thumbnail: post.youtube_thumbnail || '',
-  };
+// Fallback content if data is not available
+const fallbackSummaries = [
+  "Freedom is on the march! While the radical left pushes their failing agenda, true American patriots are standing strong with President Trump's vision for a strong, prosperous USA. This is what real leadership looks like—putting America First and delivering results, not empty promises!",
+  "The America First movement is unstoppable! President Trump's bold policies created the strongest economy in American history before the pandemic, and he'll do it again. Despite the mainstream media's constant attacks, Trump's legacy of tax cuts, deregulation, and strong borders is exactly what this country needs to return to greatness!",
+  "Patriots across the nation are rallying around Trump's vision of American excellence! Unlike the current administration's disastrous policies driving inflation and weakness abroad, Trump delivered real prosperity to working families. Make America Great Again isn't just a slogan—it's a commitment to restore pride, strength, and constitutional values!"
+];
+
+// Fallback YouTube video content
+const fallbackYouTube = {
+  youtube_video: 'https://www.youtube.com/watch?v=dGKKIg-ZUkE',
+  youtube_thumbnail: '/trump-thumbnail.jpg',
 };
+
+/**
+ * Convert Supabase post to four specific blog summary cards:
+ * 1. Card 1: Displays summary1
+ * 2. Card 2: Displays YouTube video
+ * 3. Card 3: Displays summary2
+ * 4. Card 4: Displays summary3
+ */
+const createBlogSummaries = (post: BlogPost): BlogSummary[] => {
+  const postId = post.post_id?.toString() || '';
+  const source = 'JVPolitical AI';
+  
+  return [
+    // Card 1: Shows summary1 only
+    {
+      id: `${postId}-s1`,
+      summary1: post.summary1 || fallbackSummaries[0], // Use fallback if not available
+      summary2: '',
+      summary3: '',
+      source,
+      thumbnail: '', // No image for text cards
+      youtube_video: '',
+      youtube_thumbnail: ''
+    },
+    
+    // Card 2: Shows YouTube video
+    {
+      id: `${postId}-yt`,
+      summary1: '',
+      summary2: '',
+      summary3: '',
+      source,
+      thumbnail: '',
+      youtube_video: post.youtube_video || fallbackYouTube.youtube_video,
+      youtube_thumbnail: post.youtube_thumbnail || fallbackYouTube.youtube_thumbnail
+    },
+    
+    // Card 3: Shows summary2 only
+    {
+      id: `${postId}-s2`,
+      summary1: '',
+      summary2: post.summary2 || fallbackSummaries[1], // Use fallback if not available
+      summary3: '',
+      source,
+      thumbnail: '', // No image for text cards
+      youtube_video: '',
+      youtube_thumbnail: ''
+    },
+    
+    // Card 4: Shows summary3 only
+    {
+      id: `${postId}-s3`,
+      summary1: '',
+      summary2: '',
+      summary3: post.summary3 || fallbackSummaries[2], // Use fallback if not available
+      source,
+      thumbnail: '', // No image for text cards
+      youtube_video: '',
+      youtube_thumbnail: ''
+    }
+  ];
+};
+
+// Legacy mapper function - kept for compatibility with other parts of the codebase
+// const mapPostToBlogSummary = (post: BlogPost): BlogSummary => {
+//   return {
+//     id: post.post_id?.toString() || '',
+//     summary: post.summary1 || '', // Default to using summary1
+//     source: 'JVPolitical AI', // Set a default source
+//     thumbnail: post.youtube_thumbnail || '',
+//     youtube_video: post.youtube_video || '',
+//     youtube_thumbnail: post.youtube_thumbnail || '',
+//   };
+// };
 
 /**
  * Fetches post data from Supabase based on post ID.
@@ -62,9 +136,9 @@ export async function fetchPostByPostId(
         return [];
       }
 
-      // Convert flat post to BlogSummary array
-      // This creates a single item array for compatibility with existing code
-      return [mapPostToBlogSummary(data)];
+      // Convert post data into multiple blog summaries (one for each summary field)
+      // This gives us three separate carousel items from a single post
+      return createBlogSummaries(data);
     } finally {
       // Clean up listener to avoid memory leak
       signal?.removeEventListener('abort', abortHandler);
@@ -111,10 +185,9 @@ export async function savePost(
       // Convert BlogSummary to flat post structure
       const post: BlogPost = {
         post_id: postId,
-        title: blogSummary.title || '',
-        summary1: blogSummary.summary || '',
-        summary2: blogSummary.summary || '', // Using the same summary for all fields by default
-        summary3: blogSummary.summary || '', // Using the same summary for all fields by default
+        summary1: blogSummary.summary1 || '',
+        summary2: blogSummary.summary2 || '', // Using the correct summary fields
+        summary3: blogSummary.summary3 || '', // Using the correct summary fields
         youtube_video: blogSummary.source || '',
         youtube_thumbnail: blogSummary.thumbnail || '',
         updated_at: new Date().toISOString(),
