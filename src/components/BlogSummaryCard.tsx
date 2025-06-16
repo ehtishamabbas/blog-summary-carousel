@@ -88,7 +88,7 @@ const BlogSummaryCard: React.FC<BlogSummaryCardProps> = ({ summary }) => {
               </div>
               
               {/* Play button overlay */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 hover:bg-opacity-30 transition-opacity">
+              <div className={`absolute inset-0 flex items-center justify-center transition-opacity ${(thumbnailError || !summary.youtube_thumbnail) ? 'bg-black bg-opacity-20 hover:bg-opacity-30' : 'hover:bg-black hover:bg-opacity-10'}`}>
                 <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
                   <div className="w-0 h-0 border-t-5 border-t-transparent border-l-8 border-l-white border-b-5 border-b-transparent ml-1"></div>
                 </div>

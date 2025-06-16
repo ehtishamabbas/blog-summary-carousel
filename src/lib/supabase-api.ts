@@ -35,7 +35,7 @@ const createBlogSummaries = (post: BlogPost): BlogSummary[] => {
       source,
       thumbnail: '', // No image for text cards
       youtube_video: '',
-      youtube_thumbnail: ''
+      youtube_thumbnail: post.youtube_thumbnail || fallbackYouTube.youtube_thumbnail
     },
     
     // Card 2: Shows YouTube video
@@ -59,7 +59,7 @@ const createBlogSummaries = (post: BlogPost): BlogSummary[] => {
       source,
       thumbnail: '', // No image for text cards
       youtube_video: '',
-      youtube_thumbnail: ''
+      youtube_thumbnail: post.youtube_thumbnail || fallbackYouTube.youtube_thumbnail
     },
     
     // Card 4: Shows summary3 only
@@ -71,7 +71,7 @@ const createBlogSummaries = (post: BlogPost): BlogSummary[] => {
       source,
       thumbnail: '', // No image for text cards
       youtube_video: '',
-      youtube_thumbnail: ''
+      youtube_thumbnail: post.youtube_thumbnail || fallbackYouTube.youtube_thumbnail
     }
   ];
 };
