@@ -1,13 +1,25 @@
-import React, { useState, useRef, TouchEvent } from 'react';
+import React, { useState, useRef, TouchEvent, useMemo } from 'react';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { BlogSummary } from './BlogCarousel';
 import Image from 'next/image';
+
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
 
 interface MobileBlogCarouselProps {
   summaries: BlogSummary[];
 }
 
+
+
 const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) => {
+  
   const showMobileLayout = useMediaQuery('(max-width: 450px)');
   const [currentPage, setCurrentPage] = useState(0);
   const [thumbnailError, setThumbnailError] = useState(false);
@@ -32,6 +44,7 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
       summary1: '',
       summary2: '',
       summary3: '',
+      related_posts: [], // Or undefined, to match interface consistently
     });
   }
   
@@ -87,6 +100,20 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
     return truncated + '...';
   };
   
+  const postsToDisplayForMobile = useMemo(() => {
+    const related = normalizedSummaries[3]?.related_posts || [];
+    if (related.length === 0) {
+      return []; 
+    }
+    if (related.length < 3) {
+      return related; 
+    }
+    if (related.length === 3) {
+      return shuffleArray(related); 
+    }
+    return shuffleArray(related).slice(0, 3); 
+  }, [normalizedSummaries]); // Dependency on normalizedSummaries as it contains related_posts for index 3
+
   if (!showMobileLayout) {
     return null;
   }
@@ -206,13 +233,43 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
           <div className="w-full flex-shrink-0" > {/* Adjusted height */}
             <div className="p-1 h-full">
               <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
-                <div className="flex-grow overflow-y-auto mb-2 pt-1">
-                  <p className="text-xs text-gray-700 line-clamp-6 min-h-[5em]">• {smartTruncateText(normalizedSummaries[3]?.summary3 || '', 400)}</p>
-                </div>
-                {normalizedSummaries[3]?.source && (
-                  <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
-                    Summary by {normalizedSummaries[3].source}
-                  </div>
+                {postsToDisplayForMobile.length > 0 ? (
+                  <>
+                    <h3 className="text-sm font-semibold mb-1 text-black">Top Stories</h3>
+                    <ul className="list-none space-y-0.5 flex-grow overflow-y-auto mb-2 pt-1">
+                      {postsToDisplayForMobile.map((post, index) => (
+                        <li key={index}>
+                          <a
+                            href={post.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:underline"
+                          >
+                            {post.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                    {/* Optionally, you can add a source for related articles if available in your data model */}
+                    {/* {normalizedSummaries[3]?.source && (
+                      <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
+                        Source: {normalizedSummaries[3].source}
+                      </div>
+                    )} */}
+                  </>
+                ) : (
+                  <>
+                    <div className="flex-grow overflow-y-auto mb-2 pt-1">
+                      <p className="text-xs text-gray-700 line-clamp-6 min-h-[5em]">
+                        {normalizedSummaries[3]?.summary3 ? `• ${smartTruncateText(normalizedSummaries[3].summary3, 400)}` : 'No related content available.'}
+                      </p>
+                    </div>
+                    {normalizedSummaries[3]?.source && (
+                      <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
+                        Summary by {normalizedSummaries[3].source}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>

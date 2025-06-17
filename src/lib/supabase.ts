@@ -18,6 +18,7 @@ export interface BlogPost {
   summary3: string;
   youtube_video: string;
   youtube_thumbnail: string;
+  related_posts?: { title: string; url: string; }[];
 }
 
 export type Tables = {

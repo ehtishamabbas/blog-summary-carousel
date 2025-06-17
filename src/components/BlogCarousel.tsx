@@ -11,6 +11,7 @@ export interface BlogSummary {
   thumbnail?: string;
   youtube_video?: string;
   youtube_thumbnail?: string;
+  related_posts?: Array<{ title: string; url: string }>;
 }
 
 interface BlogCarouselProps {
@@ -70,12 +71,12 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ summaries }) => {
             className="flex transition-transform duration-300 ease-in-out"
             style={{ transform: `translateX(-${currentIndex * (100 / cardsToShow)}%)` }}
           >
-            {summaries.map((summary) => (
+            {summaries.map((summary, index) => (
               <div 
                 key={summary.id} 
                 className="w-1/2 flex-shrink-0 px-3"
               >
-                <BlogSummaryCard summary={summary} />
+                <BlogSummaryCard summary={summary} isLastCard={index === summaries.length - 1} />
               </div>
             ))}
           </div>

@@ -71,7 +71,8 @@ const createBlogSummaries = (post: BlogPost): BlogSummary[] => {
       source,
       thumbnail: '', // No image for text cards
       youtube_video: '',
-      youtube_thumbnail: post.youtube_thumbnail || fallbackYouTube.youtube_thumbnail
+      youtube_thumbnail: post.youtube_thumbnail || fallbackYouTube.youtube_thumbnail,
+      related_posts: post.related_posts || [] // Ensure related_posts are passed for the 4th card
     }
   ];
 };
