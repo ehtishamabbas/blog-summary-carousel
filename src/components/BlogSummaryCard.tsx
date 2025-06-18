@@ -1,22 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { BlogSummary } from './BlogCarousel';
 import Image from 'next/image';
 
-const shuffleArray = <T,>(array: T[]): T[] => {
-  const newArray = [...array];
-  for (let i = newArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-  }
-  return newArray;
-};
-
 interface BlogSummaryCardProps {
   summary: BlogSummary;
-  isLastCard?: boolean;
 }
 
-const BlogSummaryCard: React.FC<BlogSummaryCardProps> = ({ summary, isLastCard }) => {
+const BlogSummaryCard: React.FC<BlogSummaryCardProps> = ({ summary }) => {
   // Track if thumbnail failed to load (to use fallback)
   const [thumbnailError, setThumbnailError] = useState(false);
 
@@ -62,49 +52,7 @@ const BlogSummaryCard: React.FC<BlogSummaryCardProps> = ({ summary, isLastCard }
   const summaryText = smartTruncateText(rawSummaryText);
   const hasThumbnail = Boolean(summary.thumbnail);
   
-  const postsToDisplay = useMemo(() => {
-    const related = summary.related_posts || [];
-    if (related.length === 0) {
-      return []; 
-    }
-    if (related.length < 3) {
-      return related; // Show all in order
-    }
-    if (related.length === 3) {
-      return shuffleArray(related); // Shuffle and show all 3
-    }
-    // related.length > 3
-    return shuffleArray(related).slice(0, 3); // Shuffle all, then take the first 3
-  }, [summary.related_posts]);
-
-  if (isLastCard && postsToDisplay.length > 0) {
     return (
-      <div className="border border-gray-200 rounded p-4 h-full flex flex-col bg-white">
-        <h3 className="text-md font-semibold mb-2 text-black">Top Stories</h3>
-        <ul className="list-none space-y-1 flex-grow">
-          {postsToDisplay.map((post, index) => (
-            <li key={index}>
-              <a
-                href={post.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                {post.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-        {summary.source && (
-          <div className="mt-auto pt-2 text-xs text-gray-500 border-t border-gray-100">
-            Source: {summary.source} {/* Or any other relevant footer for related posts card */}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  return (
     <div className="border border-gray-200 rounded p-4 h-full flex flex-col bg-white">
       {/* Card Header with thumbnail or YouTube thumbnail */}
       <div className="mb-3">

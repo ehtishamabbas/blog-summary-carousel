@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import BlogSummaryCard from './BlogSummaryCard';
+import SummariesOnlyDisplay from './SummariesOnlyDisplay';
+import TopStoriesDisplay from './TopStoriesDisplay';
 
 // Sample data structure for blog summaries
 export interface BlogSummary {
@@ -20,32 +22,71 @@ interface BlogCarouselProps {
   isNew?: boolean;
 }
 
-const BlogCarousel: React.FC<BlogCarouselProps> = ({ summaries }) => {
+const BlogCarousel: React.FC<BlogCarouselProps> = ({ summaries = [] }) => { // Added default for summaries
   const [currentIndex, setCurrentIndex] = useState(0);
+  const cardsToShow = 2; // Desktop shows 2 cards side-by-side
 
-  // Calculate the number of cards to display based on viewport width
-  // This would typically be handled with CSS media queries and responsive design
-  const cardsToShow = 2;
+  const carouselCardsData: Array<{
+    id: string;
+    type: 'summaries' | 'video' | 'topStories';
+    props: any; 
+  }> = [];
 
-  // Handle navigation through cards
+  // Card 1: SummariesOnlyDisplay
+  if (summaries.length > 0 && summaries[0]) { // summaries[0] provides summary1
+    carouselCardsData.push({
+      // Attempt to use a base ID by removing specific suffixes if they exist
+      id: 'summaries-card-' + (summaries[0]?.id.replace(/-s1|-yt|-s2|-s3$/, '') || 's0'),
+      type: 'summaries',
+      props: {
+        summary1: summaries[0]?.summary1,
+        // summary2 comes from the third object from createBlogSummaries (index 2)
+        summary2: summaries.length > 2 ? summaries[2]?.summary2 : null, 
+        // summary3 comes from the fourth object from createBlogSummaries (index 3)
+        summary3: summaries.length > 3 ? summaries[3]?.summary3 : null,
+      },
+    });
+  }
+
+  // Card 2: BlogSummaryCard (Video)
+  // Video data is in summaries[1] (second object from createBlogSummaries)
+  if (summaries.length > 1 && summaries[1]?.youtube_video) { 
+    carouselCardsData.push({
+      id: 'video-card-' + (summaries[1]?.id.replace(/-s1|-yt|-s2|-s3$/, '') || 'yt0'),
+      type: 'video',
+      props: {
+        summary: summaries[1], // Pass the whole summaries[1] object which is dedicated to video
+      },
+    });
+  }
+
+  // Card 3: TopStoriesDisplay
+  // related_posts are in summaries[3] (fourth object from createBlogSummaries)
+  if (summaries.length > 3 && summaries[3]?.related_posts && summaries[3].related_posts.length > 0) {
+    carouselCardsData.push({
+      id: 'top-stories-card-' + (summaries[3]?.id.replace(/-s1|-yt|-s2|-s3$/, '') || 'ts0'),
+      type: 'topStories',
+      props: {
+        related_posts: summaries[3].related_posts,
+      },
+    });
+  }
+
   const goToPrev = () => {
     setCurrentIndex(prev => 
-      prev === 0 ? Math.max(0, summaries.length - cardsToShow) : prev - 1
+      prev === 0 ? Math.max(0, carouselCardsData.length - cardsToShow) : prev - 1
     );
   };
 
   const goToNext = () => {
     setCurrentIndex(prev => 
-      prev >= summaries.length - cardsToShow ? 0 : prev + 1
+      prev >= carouselCardsData.length - cardsToShow ? 0 : prev + 1
     );
   };
   
-  // Direct navigation to specific page
   const goToPage = (pageIndex: number) => {
-    // Calculate the correct index based on cards per page
     const newIndex = pageIndex * cardsToShow;
-    // Make sure we don't exceed array bounds
-    setCurrentIndex(Math.min(newIndex, Math.max(0, summaries.length - cardsToShow)));
+    setCurrentIndex(Math.min(newIndex, Math.max(0, carouselCardsData.length - cardsToShow)));
   };
 
   return (
@@ -55,7 +96,7 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ summaries }) => {
       {/* Carousel container */}
       <div className="flex items-center justify-center relative mx-auto max-w-4xl">
         {/* Left arrow */}
-        {summaries.length > cardsToShow && (
+        {carouselCardsData.length > cardsToShow && (
           <button
             onClick={goToPrev}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md border border-gray-200 text-black font-bold"
@@ -68,22 +109,24 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ summaries }) => {
         {/* Fixed width carousel container with appropriate padding */}
         <div className="overflow-hidden w-full mx-10"> {/* mx-10 provides space for arrows */}
           <div 
-            className="flex transition-transform duration-300 ease-in-out"
+            className="flex transition-transform duration-300 ease-in-out h-[259px]" // Added h-[450px] for fixed card height
             style={{ transform: `translateX(-${currentIndex * (100 / cardsToShow)}%)` }}
           >
-            {summaries.map((summary, index) => (
+            {carouselCardsData.map((cardData) => (
               <div 
-                key={summary.id} 
-                className="w-1/2 flex-shrink-0 px-3"
+                key={cardData.id} 
+                className="w-1/2 flex-shrink-0 px-3 h-full" // Added h-full for consistent card height
               >
-                <BlogSummaryCard summary={summary} isLastCard={index === summaries.length - 1} />
+                {cardData.type === 'summaries' && <SummariesOnlyDisplay {...cardData.props} />}
+                {cardData.type === 'video' && <BlogSummaryCard {...cardData.props} />}
+                {cardData.type === 'topStories' && <TopStoriesDisplay {...cardData.props} />}
               </div>
             ))}
           </div>
         </div>
         
         {/* Right arrow */}
-        {summaries.length > cardsToShow && (
+        {carouselCardsData.length > cardsToShow && (
           <button
             onClick={goToNext}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md border border-gray-200 text-black font-bold"
@@ -96,7 +139,7 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ summaries }) => {
       
       {/* Navigation dots */}
       <div className="flex justify-center mt-4 space-x-2">
-        {Array.from({ length: Math.ceil(summaries.length / cardsToShow) }).map((_, i) => {
+        {carouselCardsData.length > cardsToShow && Array.from({ length: Math.ceil(carouselCardsData.length / cardsToShow) }).map((_, i) => {
           // Calculate current page based on currentIndex
           const currentPage = Math.floor(currentIndex / cardsToShow);
           const isActive = i === currentPage;
