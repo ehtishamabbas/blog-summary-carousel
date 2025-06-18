@@ -141,7 +141,7 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ summaries = [] }) => { // A
       <div className="flex justify-center mt-4 space-x-2">
         {carouselCardsData.length > cardsToShow && Array.from({ length: Math.ceil(carouselCardsData.length / cardsToShow) }).map((_, i) => {
           // Calculate current page based on currentIndex
-          const currentPage = Math.floor(currentIndex / cardsToShow);
+          const currentPage = Math.round(currentIndex / cardsToShow);
           const isActive = i === currentPage;
           return (
             <button
