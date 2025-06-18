@@ -65,7 +65,7 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
     
     if (Math.abs(diffX) > threshold) {
       if (diffX > 0) { // Swiped left
-        setCurrentPage(prev => Math.min(prev + 1, 2)); // Go to next page, max 2
+        setCurrentPage(prev => Math.min(prev + 1, 1)); // Go to next page, max 1 (for 2 pages total)
       } else if (diffX < 0) { // Swiped right
         setCurrentPage(prev => Math.max(prev - 1, 0)); // Go to previous page, min 0
       }
@@ -171,6 +171,9 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
                         </li>
                       ))}
                     </ul>
+                    <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
+                      Summary by {normalizedSummaries[0].source}
+                    </div>
                     {/* Optionally, you can add a source for related articles if available in your data model */}
                     {/* {normalizedSummaries[3]?.source && (
                       <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
