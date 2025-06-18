@@ -132,12 +132,14 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
         >
           {/* Page 1: Key Points & Analysis (2 panels) */}
           <div className="w-full flex-shrink-0 flex flex-col" > {/* Adjusted height */}
-            <div className="flex w-full h-full">
+            <div className="flex w-full h-[160px]">
               {/* Panel 1: Key Points */}
               <div className="flex-1 p-1">
                 <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
-                  <div className="flex-grow overflow-y-auto mb-2 pt-1">
-                    <p className="text-xs text-gray-700 line-clamp-6 min-h-[5em]">• {smartTruncateText(normalizedSummaries[0]?.summary1 || '', 240)}</p>
+                  <div className="flex-grow overflow-y-auto mb-2 pt-1 max-h-[250px]">
+                    <p className="text-xs text-gray-700 mb-3">• {normalizedSummaries[0]?.summary1 || 'No summary available.'}</p>
+                    <p className="text-xs text-gray-700">• {normalizedSummaries[2]?.summary2 || 'No summary available.'}</p>
+                    <p className="text-xs text-gray-700">• {normalizedSummaries[3]?.summary3 || 'No summary available.'}</p>
                   </div>
                   {normalizedSummaries[0]?.source && (
                     <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
@@ -149,17 +151,50 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
               
               {/* Panel 2: Analysis */}
               <div className="flex-1 p-1">
-                <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
-                  <div className="flex-grow overflow-y-auto mb-2 pt-1">
-                    <p className="text-xs text-gray-700 line-clamp-6 min-h-[5em]">• {smartTruncateText(normalizedSummaries[2]?.summary2 || '', 240)}</p>
-                  </div>
-                  {normalizedSummaries[2]?.source && (
-                    <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
-                      Summary by {normalizedSummaries[2].source}
+            <div className="p-1 h-full">
+              <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
+                {postsToDisplayForMobile.length > 0 ? (
+                  <>
+                    <h3 className="text-sm font-semibold mb-1 text-black">Top Stories</h3>
+                    <ul className="list-none flex-grow overflow-y-auto mb-2 pt-1">
+                      {postsToDisplayForMobile.map((post, index) => (
+                        <li key={index}>
+                          •
+                          <a
+                            href={post.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:underline"
+                          >
+                            {post.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                    {/* Optionally, you can add a source for related articles if available in your data model */}
+                    {/* {normalizedSummaries[3]?.source && (
+                      <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
+                        Source: {normalizedSummaries[3].source}
+                      </div>
+                    )} */}
+                  </>
+                ) : (
+                  <>
+                    <div className="flex-grow overflow-y-auto mb-2 pt-1">
+                      <p className="text-xs text-gray-700 line-clamp-6 min-h-[5em]">
+                        {normalizedSummaries[3]?.summary3 ? `• ${smartTruncateText(normalizedSummaries[3].summary3, 400)}` : 'No related content available.'}
+                      </p>
                     </div>
-                  )}
-                </div>
+                    {normalizedSummaries[3]?.source && (
+                      <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
+                        Summary by {normalizedSummaries[3].source}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
+            </div>
+          </div>
             </div>
           </div>
 
@@ -229,56 +264,10 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
             </div>
           </div>
           
-          {/* Page 3: Related Content (1 panel) */}
-          <div className="w-full flex-shrink-0" > {/* Adjusted height */}
-            <div className="p-1 h-full">
-              <div className="bg-white h-full rounded-sm p-3 flex flex-col border border-gray-200">
-                {postsToDisplayForMobile.length > 0 ? (
-                  <>
-                    <h3 className="text-sm font-semibold mb-1 text-black">Top Stories</h3>
-                    <ul className="list-none space-y-0.5 flex-grow overflow-y-auto mb-2 pt-1">
-                      {postsToDisplayForMobile.map((post, index) => (
-                        <li key={index}>
-                          <a
-                            href={post.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-blue-600 hover:underline"
-                          >
-                            {post.title}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                    {/* Optionally, you can add a source for related articles if available in your data model */}
-                    {/* {normalizedSummaries[3]?.source && (
-                      <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
-                        Source: {normalizedSummaries[3].source}
-                      </div>
-                    )} */}
-                  </>
-                ) : (
-                  <>
-                    <div className="flex-grow overflow-y-auto mb-2 pt-1">
-                      <p className="text-xs text-gray-700 line-clamp-6 min-h-[5em]">
-                        {normalizedSummaries[3]?.summary3 ? `• ${smartTruncateText(normalizedSummaries[3].summary3, 400)}` : 'No related content available.'}
-                      </p>
-                    </div>
-                    {normalizedSummaries[3]?.source && (
-                      <div className="mt-auto pt-1 text-[10px] leading-tight text-gray-600 border-t border-gray-100">
-                        Summary by {normalizedSummaries[3].source}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
       
       {/* Page indicators */}
-      {/* Page indicators for 3 pages */}
       <div className="flex justify-center space-x-1.5"> 
         <button 
           onClick={() => setCurrentPage(0)} 
@@ -289,11 +278,6 @@ const MobileBlogCarousel: React.FC<MobileBlogCarouselProps> = ({ summaries }) =>
           onClick={() => setCurrentPage(1)}
           className={`w-2 h-2 rounded-full ${currentPage === 1 ? 'bg-black' : 'bg-gray-300'}`}
           aria-label="Page 2: Video"
-        />
-        <button 
-          onClick={() => setCurrentPage(2)}
-          className={`w-2 h-2 rounded-full ${currentPage === 2 ? 'bg-black' : 'bg-gray-300'}`}
-          aria-label="Page 3: Related Content"
         />
       </div>
     </div>
