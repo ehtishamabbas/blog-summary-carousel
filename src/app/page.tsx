@@ -20,7 +20,7 @@ export default function Home() {
   const [blogSummaries, setBlogSummaries] = useState<BlogSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Effect to load blog summaries with timeout logic
+  // Effect to load blog summaries with timeout logic 
   useEffect(() => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
