@@ -11,7 +11,7 @@ const mockBlogSummaries: BlogSummary[] = [
     summary1: 'Ray Dalio warns that investors are too focused on tariffs and not paying enough attention to the breakdown in major monetary, political, and geopolitical orders.',
     summary2: '',
     summary3: '',
-    source: 'JVPolitical AI',
+    source: 'JVNN AI',
     thumbnail: '/trump-thumbnail.jpg'
   },
   {
@@ -19,14 +19,14 @@ const mockBlogSummaries: BlogSummary[] = [
     summary1: '',
     summary2: 'Dalio cites the US debt to finance expenditure as creditor countries are holding too much, which is one of the key drivers of Trump\'s policies.',
     summary3: '',
-    source: 'JVPolitical AI'
+    source: 'JVNN AI'
   },
   {
     id: '3',
     summary1: '',
     summary2: '',
     summary3: 'Analysis of how changing global economic patterns are affecting market dynamics and investment strategies in emerging economies.',
-    source: 'JVPolitical AI',
+    source: 'JVNN AI',
     thumbnail: '/trump-thumbnail.jpg'
   },
   {
@@ -34,7 +34,7 @@ const mockBlogSummaries: BlogSummary[] = [
     summary1: '',
     summary2: '',
     summary3: '',
-    source: 'JVPolitical AI',
+    source: 'JVNN AI',
     youtube_video: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     youtube_thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg'
   }
@@ -68,7 +68,7 @@ export async function fetchBlogSummaries(options: FetchSummariesOptions = {}): P
             // Update the source to match the branding
             const updatedSummaries = summaries.map(item => ({
               ...item,
-              source: 'JVPolitical AI'
+              source: 'JVNN AI'
             }));
             
             return updatedSummaries;

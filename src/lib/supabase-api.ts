@@ -23,7 +23,7 @@ const fallbackYouTube = {
  */
 const createBlogSummaries = (post: BlogPost): BlogSummary[] => {
   const postId = post.post_id?.toString() || '';
-  const source = 'JVPolitical AI';
+  const source = 'JVNN AI';
   
   return [
     // Card 1: Shows summary1 only
@@ -82,7 +82,7 @@ const createBlogSummaries = (post: BlogPost): BlogSummary[] => {
 //   return {
 //     id: post.post_id?.toString() || '',
 //     summary: post.summary1 || '', // Default to using summary1
-//     source: 'JVPolitical AI', // Set a default source
+//     source: 'JVNN AI', // Set a default source
 //     thumbnail: post.youtube_thumbnail || '',
 //     youtube_video: post.youtube_video || '',
 //     youtube_thumbnail: post.youtube_thumbnail || '',
